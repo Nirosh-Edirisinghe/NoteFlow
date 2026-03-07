@@ -6,6 +6,7 @@ import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './auth/ProtectedRoute';
 import AppLayout from './layouts/AppLayout';
+import AddNote from './pages/AddNote';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
           }
         >
           <Route path="/" element={<Dashboard />} />
+          <Route path="/add-note" element={<AddNote />} />
         </Route>
       </Routes>
     </>
