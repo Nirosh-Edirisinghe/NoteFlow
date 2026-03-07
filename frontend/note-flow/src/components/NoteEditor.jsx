@@ -12,8 +12,8 @@ const extensions = [
 const content = ``
 
 const NoteEditor = () => {
-  
-  const { token, backendUrl } = useContext(AppContext)
+
+  const { token, backendUrl, fetchNotes } = useContext(AppContext)
   const [title, setTitle] = useState("");
   const editor = useEditor({
     extensions,
@@ -27,24 +27,25 @@ const NoteEditor = () => {
 
     const content = editor.getHTML();
     console.log(token);
-    
+
     try {
       const { data } = await axios.post(`${backendUrl}/api/note/create`, {
         title,
         content,
       },
-      {
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-    );
+      );
       console.log(title);
       console.log(content);
 
       if (data.success) {
         // setCurrentNote(data.note); 
         toast.success(data.message || "Note created successfully");
+        fetchNotes();
       } else {
         toast.error(data.message || "Failed to create note");
       }
