@@ -8,7 +8,7 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 
 const Dashboard = () => {
-  const { token, notes, loading, fetchNotes, backendUrl } = useContext(AppContext)
+  const { token, notes, loading, fetchNotes, backendUrl, user } = useContext(AppContext)
   const [openMenuId, setOpenMenuId] = useState(null);
   const [filter, setFilter] = useState("all");
   const navigate = useNavigate()
@@ -49,7 +49,13 @@ const Dashboard = () => {
   };
 
   // filter notes
-  const filteredNotes = filter === "pinned" ? notes.filter((note) => note.pinned): notes;
+  const filteredNotes = notes.filter(note => {
+    if (filter === "pinned") return note.pinned;
+    if (filter === "shared") {
+      return note.collaborators.some(c => c.user === user._id) && note.userId !== user._id;
+    }
+    return true;
+  });
 
   // handle note pinned
   const pinNote = async (e, id) => {
@@ -88,12 +94,12 @@ const Dashboard = () => {
           <h1 className="text-3xl text-slate-700 font-semibold mb-4">My Notes</h1>
 
           {/* Filter Buttons */}
-          <div className="flex gap-3 mb-3">
+          <div className="flex gap-6 mb-3">
             <button
               onClick={() => setFilter("all")}
               className={`font-semibold cursor-pointer ${filter === "all"
-                  ? "text-blue-600 border-b border-blue-600"
-                  : " text-gray-500"
+                ? "text-blue-600 border-b border-blue-600"
+                : " text-gray-500"
                 }`}
             >
               All Notes
@@ -102,11 +108,21 @@ const Dashboard = () => {
             <button
               onClick={() => setFilter("pinned")}
               className={`font-semibold cursor-pointer ${filter === "pinned"
-                  ? "text-blue-600 border-b border-blue-600"
-                  : "text-gray-500"
+                ? "text-blue-600 border-b border-blue-600"
+                : "text-gray-500"
                 }`}
             >
               Pinned Notes
+            </button>
+
+            <button
+              onClick={() => setFilter("shared")}
+              className={`font-semibold cursor-pointer ${filter === "shared"
+                ? "text-blue-600 border-b border-blue-600"
+                : "text-gray-500"
+                }`}
+            >
+              Shared Notes
             </button>
           </div>
 
@@ -115,103 +131,113 @@ const Dashboard = () => {
 
         <div className="flex-1 overflow-y-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredNotes.map((note) => (
+            {filteredNotes.map((note) => {
+              const collaboratorCount = note.collaborators.length;
+              const isOnlyMe = collaboratorCount === 1 && note.collaborators[0].user === user.id;
 
-              <div key={note._id}
-                className="flex flex-col justify-between p-4 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 h-full min-h-50"
-              >
-                {/* Top Section */}
-                <div className="flex justify-between items-start">
+              return (
+                <div key={note._id}
+                  className="flex flex-col justify-between p-4 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 h-full min-h-50"
+                >
+                  {/* Top Section */}
+                  <div className="flex justify-between items-start">
 
-                  {/* Title */}
-                  <h2 className="text-lg font-semibold mb-2 line-clamp-2 text-gray-700">
-                    {note.title}
-                  </h2>
+                    {/* Title */}
+                    <h2 className="text-lg font-semibold mb-2 line-clamp-2 text-gray-700">
+                      {note.title}
+                    </h2>
 
-                  <div className='flex items-center gap-2'>
-                    {/* pin icon */}
-                    <Pin size={16}
-                      className={`cursor-pointer ${note.pinned ? "text-yellow-500" : "text-gray-400"}`}
-                      onClick={(e) => pinNote(e, note._id)}
-                    />
+                    <div className='flex items-center gap-2'>
+                      {/* pin icon */}
+                      <Pin size={16}
+                        className={`cursor-pointer ${note.pinned ? "text-yellow-500" : "text-gray-400"}`}
+                        onClick={(e) => pinNote(e, note._id)}
+                      />
 
-                    {/* Menu */}
-                    <div className="relative">
+                      {/* Menu */}
+                      <div className="relative">
 
-                      <button
-                        onClick={() => setOpenMenuId(openMenuId === note._id ? null : note._id)}
-                        className="p-1 rounded hover:bg-gray-100"
-                      >
-                        <MoreVertical size={18} />
-                      </button>
-
-                      {/* Dropdown */}
-                      <div
-                        className={`absolute right-0 mt-2 w-36 bg-white border border-blue-200 rounded-lg shadow-md transition-all duration-200 ${openMenuId === note._id
-                          ? "opacity-100 translate-y-0"
-                          : "opacity-0 -translate-y-2 pointer-events-none"
-                          }`}
-                      >
-                        <button onClick={() => navigate(`/view-note/${note._id}`)}
-                          className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-80  hover:rounded-lg text-sm text-blue-600">
-                          <Eye size={16} /> View
+                        <button
+                          onClick={() => setOpenMenuId(openMenuId === note._id ? null : note._id)}
+                          className="p-1 rounded hover:bg-gray-100"
+                        >
+                          <MoreVertical size={18} />
                         </button>
 
-                        <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50 text-sm text-blue-600">
-                          <Pencil size={16} /> Edit
-                        </button>
+                        {/* Dropdown */}
+                        <div
+                          className={`absolute right-0 mt-2 w-36 bg-white border border-blue-200 rounded-lg shadow-md transition-all duration-200 ${openMenuId === note._id
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 -translate-y-2 pointer-events-none"
+                            }`}
+                        >
+                          <button onClick={() => navigate(`/view-note/${note._id}`)}
+                            className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-80  hover:rounded-lg text-sm text-blue-600">
+                            <Eye size={16} /> View
+                          </button>
 
-                        <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50  text-blue-600 hover:rounded-lg text-sm">
-                          <Trash2 size={16} /> Delete
-                        </button>
+                          <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50 text-sm text-blue-600">
+                            <Pencil size={16} /> Edit
+                          </button>
+
+                          <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50  text-blue-600 hover:rounded-lg text-sm">
+                            <Trash2 size={16} /> Delete
+                          </button>
+                        </div>
+
                       </div>
-
                     </div>
                   </div>
-                </div>
 
 
-                {/* Preview Content */}
-                <div
-                  className="text-gray-500 text-sm prose"
-                  dangerouslySetInnerHTML={{
-                    __html: getPreviewHTML(note.content)
-                  }}
-                />
+                  {/* Preview Content */}
+                  <div
+                    className="text-gray-500 text-sm prose"
+                    dangerouslySetInnerHTML={{
+                      __html: getPreviewHTML(note.content)
+                    }}
+                  />
 
-                {/* Bottom Section */}
-                <div className="flex justify-between items-center mt-4">
+                  {/* Bottom Section */}
+                  <div className="flex justify-between items-center mt-4">
 
-                  {/* User & Collaborators */}
-                  <div className="flex items-center gap-3">
+                    {/* User & Collaborators */}
+                    <div className="flex items-center gap-3">
 
-                    {/* User Avatar */}
-                    {/* <img
+                      {/* User Avatar */}
+                      {/* <img
                     src="https://i.pravatar.cc/30"
                     alt="user"
                     className="w-7 h-7 rounded-full"
                   /> */}
 
-                    {/* Collaborators */}
+                      {/* Collaborators */}
+                      <div className="flex items-center text-gray-600 text-sm gap-1">
+                        <Users size={16} />
+                        {collaboratorCount === 0 ? (
+                          <span>Only You</span>
+                        ) : isOnlyMe ? (
+                          <span>You</span>
+                        ) : (
+                          <span>{collaboratorCount} Shared</span>
+                        )}
+                      </div>
+
+                    </div>
+
+                    {/* Created Date */}
                     <div className="flex items-center text-gray-600 text-sm gap-1">
-                      <Users size={16} />
-                      <span>3 Share</span>
+                      <Calendar size={16} />
+                      <span>
+                        {formatDate(note.createdAt)}
+                      </span>
                     </div>
 
                   </div>
 
-                  {/* Created Date */}
-                  <div className="flex items-center text-gray-600 text-sm gap-1">
-                    <Calendar size={16} />
-                    <span>
-                      {formatDate(note.createdAt)}
-                    </span>
-                  </div>
-
                 </div>
-
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
