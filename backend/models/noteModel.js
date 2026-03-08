@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+const collaboratorSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+  role: {
+    type: String,
+    enum: ["viewer", "editor"],
+    default: "viewer"
+  }
+});
+
 const noteSchema = new mongoose.Schema(
   {
     title: {
@@ -19,6 +31,8 @@ const noteSchema = new mongoose.Schema(
     },
 
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+
+    collaborators: [collaboratorSchema]
   },
   {
     timestamps: true,

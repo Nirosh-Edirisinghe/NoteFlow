@@ -1,4 +1,5 @@
 import NoteModel from "../models/noteModel.js";
+import userModel from "../models/userModel.js";
 
 // Create Note
 const createNote = async (req, res) => {
@@ -109,4 +110,31 @@ const togglePinNote = async (req, res) => {
   }
 };
 
-export { createNote, getMyNotes, getNote, updateNote, togglePinNote }
+// add collaborators
+const addCollaborator = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const { email, role } = req.body;
+    
+    const user = await userModel.findOne({ email });
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const note = await NoteModel.findById(id);
+    note.collaborators.push({
+      user: user._id,
+      role: role
+    });
+    
+    await note.save();
+    res.json({ success: true, message: "Collaborator added successful" });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { createNote, getMyNotes, getNote, updateNote, togglePinNote, addCollaborator }
