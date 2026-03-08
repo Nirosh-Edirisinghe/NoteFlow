@@ -56,4 +56,33 @@ const getNote = async (req, res) => {
   }
 };
 
-export { createNote, getMyNotes, getNote }
+const updateNote = async (req, res) => {
+
+  const noteId = req.params.id;
+  const { title, content } = req.body;
+
+  if (!title || !content) {
+    return res.status(400).json({ success: false, message: "Title and content are required" });
+  }
+
+  try {
+    const note = await NoteModel.findOne({ _id: noteId });
+    if (!note) {
+      return res.status(404).json({ success: false, message: "Note not found" });
+    }
+
+    // Update fields
+    note.title = title;
+    note.content = content;
+    note.updatedAt = Date.now();
+
+    await note.save();
+
+    return res.status(200).json({ success: true, message: "Note updated successfully", note });
+  } catch (error) {
+    console.error("Error updating note:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export { createNote, getMyNotes, getNote, updateNote }

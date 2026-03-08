@@ -193,3 +193,8 @@ ProseMirror {
   border-top: 2px solid #e5e7eb;
   margin: 2em 0;
 }
+
+/* scrollbar width */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0px;
+}
