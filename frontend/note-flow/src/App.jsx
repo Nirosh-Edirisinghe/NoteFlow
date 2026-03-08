@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './auth/ProtectedRoute';
 import AppLayout from './layouts/AppLayout';
 import AddNote from './pages/AddNote';
+import ViewNote from './pages/ViewNote';
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
         >
           <Route path="/" element={<Dashboard />} />
           <Route path="/add-note" element={<AddNote />} />
+          <Route path="/view-note/:id" element={<ViewNote />} />
         </Route>
       </Routes>
     </>
