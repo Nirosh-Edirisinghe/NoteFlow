@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from "axios";
-import { Calendar, ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { Calendar, ArrowLeft, Pencil, Trash2, Users } from "lucide-react";
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import formatDate from '../Utils/FormatData';
 import NoteEditor from '../components/NoteEditor';
 import UpdateNote from '../components/UpdateNote';
+import CollaboratorModal from '../components/CollaboratorModal';
 
 const ViewNote = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ const ViewNote = () => {
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [collabOpen, setCollabOpen] = useState(false);
   const navigate = useNavigate()
 
   // Fetch note by ID
@@ -83,10 +85,18 @@ const ViewNote = () => {
             </div> */}
             <div className="flex items-center gap-3">
 
+              {/* Collaborator Button */}
+              <button onClick={() => setCollabOpen(true)}
+                className="flex items-center gap-2 px-2 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition cursor-pointer"
+              >
+                <Users size={18} />
+                <span className="hidden md:inline font-semibold">Collaborators</span>
+              </button>
+
               {/* Edit Button */}
               <button
                 onClick={() => handleEditNote(note)}
-                className="flex items-center gap-2 px-2 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer"
+                className="flex items-center gap-2 px-2 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition cursor-pointer"
               >
                 <Pencil size={18} />
                 <span className="hidden md:inline font-semibold">Edit Note</span>
@@ -95,7 +105,7 @@ const ViewNote = () => {
               {/* Delete Button */}
               <button
                 onClick={handleDelete}
-                className="flex items-center gap-2 px-2 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition cursor-pointer"
+                className="flex items-center gap-2 px-2 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition cursor-pointer"
               >
                 <Trash2 size={18} />
                 <span className="hidden md:inline font-semibold">Delete Note</span>
@@ -121,6 +131,14 @@ const ViewNote = () => {
           note={selectedNote}
           onClose={() => setEditorOpen(false)}
           fetchNote={fetchNote}
+        />
+      )}
+
+      {/* open collobarator model */}
+      {collabOpen && (
+        <CollaboratorModal
+          noteId={id}
+          onClose={() => setCollabOpen(false)}
         />
       )}
     </>
