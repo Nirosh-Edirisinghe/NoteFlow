@@ -38,4 +38,22 @@ const getMyNotes = async (req, res) => {
   }
 };
 
-export { createNote, getMyNotes }
+const getNote = async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const userId = req.user.id;
+
+    const note = await NoteModel.findOne({ _id: noteId, userId });
+
+    if (!note) {
+      return res.status(404).json({ success: false, message: "Note not found" });
+    }
+
+    res.json({ success: true, note });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch note" });
+  }
+};
+
+export { createNote, getMyNotes, getNote }
