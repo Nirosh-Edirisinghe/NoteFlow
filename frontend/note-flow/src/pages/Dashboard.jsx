@@ -1,13 +1,16 @@
 import React, { useContext, useEffect } from 'react'
 import { AppContext } from '../context/AppContext'
-import { MoreVertical, Eye, Pencil, Trash2, Calendar, Users } from "lucide-react";
+import { MoreVertical, Eye, Pencil, Trash2, Calendar, Users, Pin } from "lucide-react";
 import { useState } from 'react';
 import formatDate from '../Utils/FormatData.js';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { toast } from 'react-toastify';
 
 const Dashboard = () => {
-  const { notes, loading } = useContext(AppContext)
+  const { token, notes, loading, fetchNotes, backendUrl } = useContext(AppContext)
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [filter, setFilter] = useState("all");
   const navigate = useNavigate()
 
   const getPreviewHTML = (html, maxLength = 130) => {
@@ -45,6 +48,33 @@ const Dashboard = () => {
     return firstElement.outerHTML;
   };
 
+  // filter notes
+  const filteredNotes = filter === "pinned" ? notes.filter((note) => note.pinned): notes;
+
+  // handle note pinned
+  const pinNote = async (e, id) => {
+    e.preventDefault();
+    console.log("cal the pin api", token);
+
+    try {
+      const { data } = await axios.put(`${backendUrl}/api/note/pin-note/${id}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}`, }, }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        fetchNotes();
+      } else {
+        toast.error(data.message || "Failed to Pinned note");
+      }
+    } catch (error) {
+      console.error("Error in Pinned note :", error);
+      toast.error("Failed to Pinned");
+    }
+  };
+
+
   if (loading) {
     return <div className="p-6">Loading issue...</div>;
   }
@@ -55,16 +85,39 @@ const Dashboard = () => {
 
         {/*  Fixed Header */}
         <div className="flex-none">
-          <h1 className="text-3xl text-slate-700 font-semibold mb-2">My Notes</h1>
+          <h1 className="text-3xl text-slate-700 font-semibold mb-4">My Notes</h1>
+
+          {/* Filter Buttons */}
+          <div className="flex gap-3 mb-3">
+            <button
+              onClick={() => setFilter("all")}
+              className={`font-semibold cursor-pointer ${filter === "all"
+                  ? "text-blue-600 border-b border-blue-600"
+                  : " text-gray-500"
+                }`}
+            >
+              All Notes
+            </button>
+
+            <button
+              onClick={() => setFilter("pinned")}
+              className={`font-semibold cursor-pointer ${filter === "pinned"
+                  ? "text-blue-600 border-b border-blue-600"
+                  : "text-gray-500"
+                }`}
+            >
+              Pinned Notes
+            </button>
+          </div>
+
           <hr className="text-gray-300 mb-4" />
         </div>
 
         <div className="flex-1 overflow-y-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {notes.map((note) => (
+            {filteredNotes.map((note) => (
 
-              <div
-                key={note._id}
+              <div key={note._id}
                 className="flex flex-col justify-between p-4 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 h-full min-h-50"
               >
                 {/* Top Section */}
@@ -75,37 +128,45 @@ const Dashboard = () => {
                     {note.title}
                   </h2>
 
-                  {/* Menu */}
-                  <div className="relative">
+                  <div className='flex items-center gap-2'>
+                    {/* pin icon */}
+                    <Pin size={16}
+                      className={`cursor-pointer ${note.pinned ? "text-yellow-500" : "text-gray-400"}`}
+                      onClick={(e) => pinNote(e, note._id)}
+                    />
 
-                    <button
-                      onClick={() => setOpenMenuId(openMenuId === note._id ? null : note._id)}
-                      className="p-1 rounded hover:bg-gray-100"
-                    >
-                      <MoreVertical size={18} />
-                    </button>
+                    {/* Menu */}
+                    <div className="relative">
 
-                    {/* Dropdown */}
-                    <div
-                      className={`absolute right-0 mt-2 w-36 bg-white border border-blue-200 rounded-lg shadow-md transition-all duration-200 ${openMenuId === note._id
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 -translate-y-2 pointer-events-none"
-                        }`}
-                    >
-                      <button onClick={() => navigate(`/view-note/${note._id}`)}
-                        className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-80  hover:rounded-lg text-sm text-blue-600">
-                        <Eye size={16} /> View
+                      <button
+                        onClick={() => setOpenMenuId(openMenuId === note._id ? null : note._id)}
+                        className="p-1 rounded hover:bg-gray-100"
+                      >
+                        <MoreVertical size={18} />
                       </button>
 
-                      <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50 text-sm text-blue-600">
-                        <Pencil size={16} /> Edit
-                      </button>
+                      {/* Dropdown */}
+                      <div
+                        className={`absolute right-0 mt-2 w-36 bg-white border border-blue-200 rounded-lg shadow-md transition-all duration-200 ${openMenuId === note._id
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 -translate-y-2 pointer-events-none"
+                          }`}
+                      >
+                        <button onClick={() => navigate(`/view-note/${note._id}`)}
+                          className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-80  hover:rounded-lg text-sm text-blue-600">
+                          <Eye size={16} /> View
+                        </button>
 
-                      <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50  text-blue-600 hover:rounded-lg text-sm">
-                        <Trash2 size={16} /> Delete
-                      </button>
+                        <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50 text-sm text-blue-600">
+                          <Pencil size={16} /> Edit
+                        </button>
+
+                        <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50  text-blue-600 hover:rounded-lg text-sm">
+                          <Trash2 size={16} /> Delete
+                        </button>
+                      </div>
+
                     </div>
-
                   </div>
                 </div>
 

@@ -8,7 +8,7 @@ const authUser = async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.json({
         success: false,
-        message: "Unauthorized Login Again",
+        message: "Unauthorized Login Again !",
       });
     }
 

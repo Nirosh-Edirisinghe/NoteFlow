@@ -85,4 +85,28 @@ const updateNote = async (req, res) => {
   }
 };
 
-export { createNote, getMyNotes, getNote, updateNote }
+// pinned note
+const togglePinNote = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const note = await NoteModel.findById(id);
+
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    note.pinned = !note.pinned;
+    await note.save();
+    res.json({
+      success: true,
+      message: note.pinned ? "Note pinned" : "Note unpinned",
+      note
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export { createNote, getMyNotes, getNote, updateNote, togglePinNote }

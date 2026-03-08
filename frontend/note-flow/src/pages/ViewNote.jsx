@@ -71,7 +71,7 @@ const ViewNote = () => {
                 <ArrowLeft size={20} />
               </button>
 
-              <h1 className="text-xl lg:text-2xl font-bold text-gray-800">
+              <h1 className="text-xl lg:text-3xl text-slate-700 font-semibold">
                 {note.title}
               </h1>
             </div>
