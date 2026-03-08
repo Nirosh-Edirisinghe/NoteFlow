@@ -1,18 +1,22 @@
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from "axios";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import formatDate from '../Utils/FormatData';
+import NoteEditor from '../components/NoteEditor';
+import UpdateNote from '../components/UpdateNote';
 
 const ViewNote = () => {
   const { id } = useParams();
   const { token, backendUrl } = useContext(AppContext)
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null);
   const navigate = useNavigate()
 
   // Fetch note by ID
@@ -30,6 +34,14 @@ const ViewNote = () => {
     } finally {
       setLoading(false);
     }
+  };
+  const handleEditNote = (note) => {
+    setSelectedNote(note);
+    setEditorOpen(true);
+  };
+
+  const handleDelete = () => {
+    console.log("Delete note");
   };
 
   useEffect(() => {
@@ -65,12 +77,33 @@ const ViewNote = () => {
             </div>
 
             {/* Created Date */}
-            <div className="flex items-center text-gray-500 gap-2">
+            {/* <div className="flex items-center text-gray-500 gap-2">
               <Calendar size={18} />
               <span>{formatDate(note.createdAt)}</span>
+            </div> */}
+            <div className="flex items-center gap-3">
+
+              {/* Edit Button */}
+              <button
+                onClick={() => handleEditNote(note)}
+                className="flex items-center gap-2 px-2 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer"
+              >
+                <Pencil size={18} />
+                <span className="hidden md:inline font-semibold">Edit Note</span>
+              </button>
+
+              {/* Delete Button */}
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-2 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition cursor-pointer"
+              >
+                <Trash2 size={18} />
+                <span className="hidden md:inline font-semibold">Delete Note</span>
+              </button>
             </div>
+
           </div>
-          
+
           <hr className='text-gray-400 mb-6' />
         </div>
 
@@ -82,6 +115,14 @@ const ViewNote = () => {
           />
         </div>
       </div>
+
+      {editorOpen && selectedNote && (
+        <UpdateNote
+          note={selectedNote}
+          onClose={() => setEditorOpen(false)}
+          fetchNote={fetchNote}
+        />
+      )}
     </>
   )
 }
