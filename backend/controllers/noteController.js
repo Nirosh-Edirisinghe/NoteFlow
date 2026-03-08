@@ -49,7 +49,15 @@ const getNote = async (req, res) => {
     const noteId = req.params.id;
     const userId = req.user.id;
 
-    const note = await NoteModel.findOne({ _id: noteId, userId });
+    const note = await NoteModel.findOne({
+      _id: noteId,
+      $or: [
+        { userId },
+        { "collaborators.user": userId }
+      ]
+    })
+    .populate("userId", "name email") 
+    .populate("collaborators.user", "name email"); 
 
     if (!note) {
       return res.status(404).json({ success: false, message: "Note not found" });

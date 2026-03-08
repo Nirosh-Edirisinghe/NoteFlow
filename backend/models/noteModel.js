@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const collaboratorSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "user"
   },
   role: {
     type: String,
@@ -30,7 +30,7 @@ const noteSchema = new mongoose.Schema(
       default: false
     },
 
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
 
     collaborators: [collaboratorSchema]
   },
