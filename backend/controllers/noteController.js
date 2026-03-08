@@ -23,7 +23,12 @@ const getMyNotes = async (req, res) => {
   try {
 
     const userId = req.user.id;
-    const notes = await NoteModel.find({ userId }).sort({ createdAt: -1 });
+    const notes = await NoteModel.find({
+      $or: [
+        { userId: userId }, // notes you own
+        { "collaborators.user": userId } // notes shared with you
+      ]
+    }).sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -128,7 +133,7 @@ const addCollaborator = async (req, res) => {
       user: user._id,
       role: role
     });
-    
+
     await note.save();
     res.json({ success: true, message: "Collaborator added successful" });
 
