@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from "axios";
-import { Calendar, ArrowLeft, Pencil, Trash2, Users } from "lucide-react";
+import { Calendar, ArrowLeft, Pencil, Trash2, Users, Eye } from "lucide-react";
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { useState } from 'react';
@@ -11,6 +11,7 @@ import NoteEditor from '../components/NoteEditor';
 import UpdateNote from '../components/UpdateNote';
 import CollaboratorModal from '../components/CollaboratorModal';
 import { toast } from 'react-toastify';
+import CollabDropdown from '../components/CollabDropdown';
 
 const ViewNote = () => {
   const { id } = useParams();
@@ -20,6 +21,7 @@ const ViewNote = () => {
   const [editorOpen, setEditorOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
   const [collabOpen, setCollabOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate()
 
   // Fetch note by ID
@@ -41,7 +43,15 @@ const ViewNote = () => {
 
   // handle update note
   const handleEditNote = (note) => {
-    const isEditable = note.userId === user._id || note.collaborators?.some(c => c.user._id === user._id && c.role === "editor");
+
+    const isOwner =
+      note.userId?._id === user._id || note.userId === user._id;
+
+    const isEditor = note.collaborators?.some(
+      (c) => c.user?._id === user._id && c.role === "editor"
+    );
+
+    const isEditable = isOwner || isEditor;
 
     if (!isEditable) {
       toast.error("Not Acces to edit this.");
@@ -53,6 +63,18 @@ const ViewNote = () => {
 
   const handleDelete = () => {
     console.log("Delete note");
+  };
+
+  // controlor collab model open
+  const handleCollaboratorOpen = (note) => {
+    const isOwner = note.userId._id === user._id || note.userId === user._id;
+
+    if (!isOwner) {
+      toast.error("Only the owner can manage collaborators.");
+      return;
+    }
+
+    setCollabOpen(true);
   };
 
   useEffect(() => {
@@ -92,10 +114,12 @@ const ViewNote = () => {
               <Calendar size={18} />
               <span>{formatDate(note.createdAt)}</span>
             </div> */}
+
+            {/* update/delete button section */}
             <div className="flex items-center gap-3">
 
               {/* Collaborator Button */}
-              <button onClick={() => setCollabOpen(true)}
+              <button onClick={() => handleCollaboratorOpen(note)}
                 className="flex items-center gap-2 px-2 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition cursor-pointer"
               >
                 <Users size={18} />
@@ -122,6 +146,23 @@ const ViewNote = () => {
             </div>
 
           </div>
+
+          {/* show colloborators */}
+          <div className='relative flex justify-end mb-4'>
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-100 transition cursor-pointer"
+            >
+              <Eye size={16} />
+              <span className="text-sm font-medium text-gray-600">View</span>
+            </button>
+
+            {/* Dropdown */}
+            {open && (
+              <CollabDropdown note={note} onClose={() => setOpen(false)} />
+            )}
+          </div>
+
           <hr className='text-gray-400 mb-6' />
         </div>
 
