@@ -7,17 +7,14 @@ import { ChevronDown } from "lucide-react";
 
 const roles = ["viewer", "editor"];
 
-const CollaboratorModal = ({ noteId, onClose }) => {
+const CollaboratorModal = ({ noteId, onClose, fetchNote }) => {
 
   const { backendUrl, token } = useContext(AppContext);
-
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("viewer");
 
   const handleAdd = async () => {
     try {
-      console.log(noteId);
-
       const { data } = await axios.post(
         `${backendUrl}/api/note/add-collaborator/${noteId}`,
         { email, role },
@@ -27,6 +24,7 @@ const CollaboratorModal = ({ noteId, onClose }) => {
       );
       if (data.success) {
         toast.success(data.message);
+        fetchNote()
         setEmail("");
       } else {
         toast.error(data.message || "Failed to add colloborators");

@@ -10,10 +10,11 @@ import formatDate from '../Utils/FormatData';
 import NoteEditor from '../components/NoteEditor';
 import UpdateNote from '../components/UpdateNote';
 import CollaboratorModal from '../components/CollaboratorModal';
+import { toast } from 'react-toastify';
 
 const ViewNote = () => {
   const { id } = useParams();
-  const { token, backendUrl } = useContext(AppContext)
+  const { token, backendUrl, user } = useContext(AppContext)
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -37,7 +38,15 @@ const ViewNote = () => {
       setLoading(false);
     }
   };
+
+  // handle update note
   const handleEditNote = (note) => {
+    const isEditable = note.userId === user._id || note.collaborators?.some(c => c.user._id === user._id && c.role === "editor");
+
+    if (!isEditable) {
+      toast.error("Not Acces to edit this.");
+      return;
+    }
     setSelectedNote(note);
     setEditorOpen(true);
   };
@@ -113,7 +122,6 @@ const ViewNote = () => {
             </div>
 
           </div>
-
           <hr className='text-gray-400 mb-6' />
         </div>
 
@@ -139,6 +147,7 @@ const ViewNote = () => {
         <CollaboratorModal
           noteId={id}
           onClose={() => setCollabOpen(false)}
+          fetchNote={fetchNote}
         />
       )}
     </>

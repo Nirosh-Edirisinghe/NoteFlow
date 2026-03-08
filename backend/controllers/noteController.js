@@ -56,8 +56,8 @@ const getNote = async (req, res) => {
         { "collaborators.user": userId }
       ]
     })
-    .populate("userId", "name email") 
-    .populate("collaborators.user", "name email"); 
+      .populate("userId", "name email")
+      .populate("collaborators.user", "name email");
 
     if (!note) {
       return res.status(404).json({ success: false, message: "Note not found" });
@@ -70,19 +70,30 @@ const getNote = async (req, res) => {
   }
 };
 
+// update note
 const updateNote = async (req, res) => {
 
   const noteId = req.params.id;
   const { title, content } = req.body;
+  const userId = req.user.id;
 
   if (!title || !content) {
     return res.status(400).json({ success: false, message: "Title and content are required" });
   }
 
   try {
-    const note = await NoteModel.findOne({ _id: noteId });
+    const note = await NoteModel.findById(noteId).populate("collaborators.user");
     if (!note) {
       return res.status(404).json({ success: false, message: "Note not found" });
+    }
+
+    // Check if user is owner or editor collaborator
+    const isEditable =
+      note.userId.toString() === userId ||
+      note.collaborators.some(c => c.user._id.toString() === userId && c.role === "editor");
+
+    if (!isEditable) {
+      return res.status(403).json({ success: false, message: "You do not have permission to edit this note" });
     }
 
     // Update fields
@@ -129,9 +140,9 @@ const addCollaborator = async (req, res) => {
 
     const { id } = req.params;
     const { email, role } = req.body;
-    
+
     const user = await userModel.findOne({ email });
-    
+
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
