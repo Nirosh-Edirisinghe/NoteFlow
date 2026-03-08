@@ -4,6 +4,7 @@ import 'dotenv/config'
 import connectDb from './config/db.js';
 import authRouter from './routes/authRoutes.js';
 import noteRouter from './routes/noteRoute.js';
+import userRouter from './routes/userRouter.js';
 
 // app config
 const app = express();
@@ -18,6 +19,7 @@ app.use(cors())
 // api enpoints
 app.use('/api/auth',authRouter)
 app.use('/api/note',noteRouter)
+app.use('/api/user',userRouter)
 
 app.get('/',(req,res)=>{
   res.send("Api working great")

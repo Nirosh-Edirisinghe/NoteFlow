@@ -8,6 +8,7 @@ const AppContextProvider = (props) => {
   const [token, setToken] = useState(localStorage.getItem("Utoken"))
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState(null);
 
   const login = (token) => {
     localStorage.setItem("Utoken", token);
@@ -22,7 +23,7 @@ const AppContextProvider = (props) => {
   // fetch my notes
   const fetchNotes = async () => {
     if (!token) return;
-    
+
     try {
       setLoading(true)
       const { data } = await axios.get(backendUrl + '/api/note/my-notes',
@@ -36,22 +37,42 @@ const AppContextProvider = (props) => {
       if (data.success) {
         setNotes(data.notes);
         console.log('api call succeces');
-        
+
       }
 
     } catch (error) {
       console.log(error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
+
+  // Fetch user data
+  const fetchUserData = async () => {
+    if (!token) return;
+
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/user/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setUser(data.user);     
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, [token]);
 
   useEffect(() => {
     fetchNotes();
   }, [token]);
 
   const value = {
-    token, setToken, login, logout, backendUrl, fetchNotes,notes,loading
+    token, setToken, login, logout, backendUrl, fetchNotes, notes, loading, user
   }
 
   return (
