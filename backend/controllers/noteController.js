@@ -187,4 +187,29 @@ const deleteNote = async (req, res) => {
   }
 };
 
-export { createNote, getMyNotes, getNote, updateNote, togglePinNote, addCollaborator, deleteNote }
+// remove colloborator
+const removeCollaborator = async (req, res) => {
+  const { noteId, collabId } = req.params;
+  const userId = req.user.id; 
+
+  try {
+    const note = await NoteModel.findById(noteId);
+    if (!note) return res.status(404).json({ message: "Note not found" });
+
+    if (note.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Only owner can remove collaborators" });
+    }
+
+    note.collaborators = note.collaborators.filter(
+      c => (c.user?._id || c.user).toString() !== collabId
+    );
+
+    await note.save();
+    res.status(200).json({success:true, message: "Collaborator removed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({success:false, message: "Server error" });
+  }
+};
+
+export { createNote, getMyNotes, getNote, updateNote, togglePinNote, addCollaborator, deleteNote, removeCollaborator }
