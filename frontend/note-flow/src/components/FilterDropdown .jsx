@@ -24,7 +24,7 @@ const FilterDropdown = ({ filter, setFilter }) => {
   }, []);
 
   return (
-    <div ref={dropdownRef} className="relative w-1/3 sm:w-44">
+    <div ref={dropdownRef} className="relative w-1/2 sm:w-44">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between gap-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-md px-2 py-1 text-sm font-medium cursor-pointer"

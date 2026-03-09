@@ -191,7 +191,7 @@ const UpdateNote = ({ note, onClose, fetchNote }) => {
         {/* Save Button */}
         <button
           onClick={updateNote}
-          className="mt-4 px-8 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-600 cursor-pointer">
+          className="mt-4 px-8 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-600 cursor-pointer">
           Update Note
         </button>
       </div>
