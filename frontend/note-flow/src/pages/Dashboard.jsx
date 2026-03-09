@@ -6,6 +6,14 @@ import formatDate from '../Utils/FormatData.js';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from 'react-toastify';
+import FilterDropdown from '../components/FilterDropdown .jsx';
+
+const filterOptions = [
+  { label: "All Notes", value: "all" },
+  { label: "My Notes", value: "mynotes" },
+  { label: "Shared Notes", value: "shared" },
+  { label: "Pinned Notes", value: "pinned" },
+];
 
 const Dashboard = () => {
   const { token, notes, loading, fetchNotes, backendUrl, user } = useContext(AppContext)
@@ -96,47 +104,28 @@ const Dashboard = () => {
         <div className="flex-none">
           <h1 className="text-3xl text-slate-700 font-semibold mb-4">My Notes</h1>
 
-          {/* Filter Buttons */}
-          <div className="flex gap-6 mb-3">
-            <button
-              onClick={() => setFilter("all")}
-              className={`font-semibold cursor-pointer ${filter === "all"
-                ? "text-blue-600 border-b border-blue-600"
-                : " text-gray-500"
-                }`}
-            >
-              All Notes
-            </button>
+          <div className="mb-3">
+            {/*large screen view */}
+            <div className="hidden sm:flex gap-6 mb-3">
+              {filterOptions.map((item) => (
+                <button
+                  key={item.value}
+                  onClick={() => setFilter(item.value)}
+                  className={`font-semibold cursor-pointer ${filter === item.value
+                    ? "text-blue-600 border-b border-blue-600"
+                    : "text-gray-500"
+                    }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
 
-            <button
-              onClick={() => setFilter("mynotes")}
-              className={`font-semibold cursor-pointer ${filter === "mynotes"
-                ? "text-blue-600 border-b border-blue-600"
-                : "text-gray-500"
-                }`}
-            >
-              My Notes
-            </button>
+            {/* Dropdown for mobile scree */}
+            <div className="sm:hidden mb-3">
+              <FilterDropdown filter={filter} setFilter={setFilter} />
+            </div>
 
-            <button
-              onClick={() => setFilter("shared")}
-              className={`font-semibold cursor-pointer ${filter === "shared"
-                ? "text-blue-600 border-b border-blue-600"
-                : "text-gray-500"
-                }`}
-            >
-              Shared Notes
-            </button>
-
-            <button
-              onClick={() => setFilter("pinned")}
-              className={`font-semibold cursor-pointer ${filter === "pinned"
-                ? "text-blue-600 border-b border-blue-600"
-                : "text-gray-500"
-                }`}
-            >
-              Pinned Notes
-            </button>
           </div>
 
           <hr className="text-gray-300 mb-4" />
@@ -165,7 +154,7 @@ const Dashboard = () => {
                       {/* pin icon */}
                       <Pin size={16}
                         className={`cursor-pointer ${note.pinned ? "text-yellow-500" : "text-gray-400"}`}
-                        onClick={(e) =>{ 
+                        onClick={(e) => {
                           e.stopPropagation();
                           pinNote(e, note._id)
                         }}
