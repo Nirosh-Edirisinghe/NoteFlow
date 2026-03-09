@@ -49,14 +49,14 @@ const UpdateNote = ({ note, onClose, fetchNote }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-2xl h-[90vh] overflow-y-auto shadow-lg relative px-4 pb-4 mx-2 custom-scrollbar">
+    <div onClick={onClose} className="fixed inset-0 bg-black/40 backdrop-blur-xs flex justify-center items-center z-50">
+      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-lg w-full max-w-2xl h-[90vh] overflow-y-auto shadow-lg relative px-4 pb-4 mx-2 custom-scrollbar">
 
         <div className="sticky top-0 z-20 bg-white border-b border-gray-300 flex flex-col">
 
           <div className='flex justify-end mb-2 pt-4 pb-2'>
             {/* Close Button */}
-            <button onClick={onClose} className="text-gray-600 font-semibold">
+            <button onClick={onClose} className="text-gray-600 font-semibold  cursor-pointer">
              <X size={20} />
             </button>
           </div>
@@ -180,11 +180,11 @@ const UpdateNote = ({ note, onClose, fetchNote }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter note title..."
-          className="w-full my-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="w-full my-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 text-gray-800 font-medium"
         />
 
         {/* Editor Content */}
-        <div className="prose max-w-none border border-gray-300 shadow-md rounded-lg p-4 min-h-75 bg-white">
+        <div className="prose max-w-none border border-gray-300 shadow-md rounded-lg p-4 min-h-75 bg-white text-gray-800">
           <EditorContent editor={editor} />
         </div>
 

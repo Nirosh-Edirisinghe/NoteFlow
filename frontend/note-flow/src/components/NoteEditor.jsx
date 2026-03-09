@@ -6,6 +6,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import axios from "axios";
 import { toast } from 'react-toastify'
 import { AppContext } from '../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 const extensions = [
   StarterKit,
@@ -26,6 +27,8 @@ const NoteEditor = () => {
     content
   })
 
+  const navigate = useNavigate()
+
   // handle create notes
   const createNote = async (e) => {
     e.preventDefault();
@@ -45,13 +48,12 @@ const NoteEditor = () => {
           },
         }
       );
-      console.log(title);
-      console.log(content);
 
       if (data.success) {
         // setCurrentNote(data.note); 
         toast.success(data.message || "Note created successfully");
         fetchNotes();
+        navigate(-1);
       } else {
         toast.error(data.message || "Failed to create note");
       }
@@ -185,21 +187,21 @@ const NoteEditor = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 notes-scrollbar">
         {/* Title Input */}
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter Note Title..."
-          className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="w-full mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-300 text-gray-800 font-medium"
         />
 
-        <div className="prose max-w-none border border-gray-300 shadow-md rounded-lg p-4 min-h-75 bg-white">
+        <div className="prose max-w-none border border-gray-300 shadow-md rounded-lg p-4 min-h-75 bg-white text-gray-800">
           <EditorContent editor={editor} />
         </div>
 
-        <button onClick={createNote} className="mt-4 px-8 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-600">
+        <button onClick={createNote} className="mt-4 px-8 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-600 cursor-pointer">
           Save Note
         </button>
       </div>

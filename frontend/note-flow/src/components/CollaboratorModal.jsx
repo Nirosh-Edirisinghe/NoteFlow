@@ -9,7 +9,7 @@ const roles = ["viewer", "editor"];
 
 const CollaboratorModal = ({ noteId, onClose, fetchNote }) => {
 
-  const { backendUrl, token } = useContext(AppContext);
+  const { backendUrl, token, fetchNotes } = useContext(AppContext);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("viewer");
 
@@ -26,6 +26,8 @@ const CollaboratorModal = ({ noteId, onClose, fetchNote }) => {
         toast.success(data.message);
         fetchNote()
         setEmail("");
+        onClose();
+        fetchNotes();
       } else {
         toast.error(data.message || "Failed to add colloborators");
       }
@@ -37,9 +39,9 @@ const CollaboratorModal = ({ noteId, onClose, fetchNote }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div onClick={onClose} className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-      <div className="bg-white rounded-lg w-100 p-6 text-gray-700 ">
+      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-lg w-100 p-6 text-gray-700 ">
 
         <h2 className="text-xl font-semibold text-gray-700 mb-4">
           Add Collaborator

@@ -1,4 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
+
+*{
+  font-family:Outfit;
+}
 
 @theme {
  --color-primary:#5f6fff;
@@ -197,4 +202,24 @@ ProseMirror {
 /* scrollbar width */
 .custom-scrollbar::-webkit-scrollbar {
   width: 0px;
+}
+
+/* Notes Grid Scrollbar */
+.notes-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notes-scrollbar::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+.notes-scrollbar::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 10px;
+  height: 5px;
+}
+
+.notes-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

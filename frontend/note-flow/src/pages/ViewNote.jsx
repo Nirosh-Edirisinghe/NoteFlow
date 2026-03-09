@@ -114,7 +114,7 @@ const ViewNote = () => {
 
   return (
     <>
-      <div className="h-screen px-2 py-6 bg-white rounded-xl sm:p-8 flex flex-col">
+      <div className="h-screen px-4 py-6 bg-white rounded-xl sm:p-8 flex flex-col">
 
         {/* header section */}
         <div className="flex-none">
@@ -122,12 +122,12 @@ const ViewNote = () => {
 
             <div className="flex items-center gap-4 w-full md:w-auto">
               <button onClick={() => navigate(-1)}
-                className="p-3 bg-gray-200 rounded-full hover:bg-gray-300 cursor-pointer"
+                className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300 cursor-pointer"
               >
                 <ArrowLeft size={20} />
               </button>
 
-              <h1 className="text-xl lg:text-2xl text-slate-700 font-semibold">
+              <h1 className="text-2xl lg:text-3xl text-slate-700 font-medium">
                 View note
               </h1>
             </div>
@@ -179,14 +179,14 @@ const ViewNote = () => {
             </div>
 
           </div>
-          <hr className='text-gray-400 mb-4' />
+          <hr className='text-gray-300 mb-4' />
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 overflow-y-auto">
-          
+        <div className="flex-1 overflow-y-auto notes-scrollbar">
+
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-slate-700 font-semibold text-xl">
+            <h1 className="text-slate-700 font-medium text-xl">
               {note.title}
             </h1>
 
@@ -195,7 +195,7 @@ const ViewNote = () => {
             </span>
           </div>
           <div
-            className="note-content prose max-w-none text-gray-800 bg-white px-6 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+            className="note-content prose max-w-none text-gray-700 bg-white px-6 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
             dangerouslySetInnerHTML={{ __html: note.content }}
           />
         </div>

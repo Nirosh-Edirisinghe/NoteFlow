@@ -98,12 +98,13 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="h-screen px-1 py-6 bg-white rounded-xl sm:p-6 flex flex-col">
+      <div className="h-screen px-4 py-6 bg-white rounded-xl sm:p-6 flex flex-col">
 
         {/*  Fixed Header */}
         <div className="flex-none">
-          <h1 className="text-3xl text-slate-700 font-semibold mb-4">My Notes</h1>
-
+          <h1 className="text-3xl text-slate-700 mb-4">My Notes</h1>
+          
+          {/* filter section */}
           <div className="mb-3">
             {/*large screen view */}
             <div className="hidden sm:flex gap-6 mb-3">
@@ -111,7 +112,7 @@ const Dashboard = () => {
                 <button
                   key={item.value}
                   onClick={() => setFilter(item.value)}
-                  className={`font-semibold cursor-pointer ${filter === item.value
+                  className={`font-medium cursor-pointer ${filter === item.value
                     ? "text-blue-600 border-b border-blue-600"
                     : "text-gray-500"
                     }`}
@@ -131,7 +132,7 @@ const Dashboard = () => {
           <hr className="text-gray-300 mb-4" />
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto notes-scrollbar">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredNotes.map((note) => {
               const collaboratorCount = note.collaborators.length;
@@ -146,7 +147,7 @@ const Dashboard = () => {
                   <div className="flex justify-between items-start">
 
                     {/* Title */}
-                    <h2 className="text-lg font-semibold mb-2 line-clamp-2 text-gray-700">
+                    <h2 className="text-lg mb-2 line-clamp-2 text-gray-700">
                       {note.title}
                     </h2>
 
