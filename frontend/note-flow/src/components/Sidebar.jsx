@@ -1,12 +1,13 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, X, NotebookPen,Plus } from "lucide-react";
+import SidebarUserMenu from './SidebarUserMenu';
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
-     ${isActive ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-slate-100"}`;
+     ${isActive ? "bg-blue-600 text-white" : "text-slate-700 bg-slate-100 hover:bg-slate-200"}`;
 
   return (
     <>
@@ -27,10 +28,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           <div className="px-6 py-5 flex items-center justify-between border-b border-slate-300">
 
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 flex items-center justify-center bg-blue-700 border border-blue-500 rounded-lg">
+              <div className="w-10 h-10 flex items-center justify-center bg-blue-600 border border-blue-500 rounded-lg">
                 <NotebookPen className="text-white" size={20} />
               </div>
-              <span className="text-xl text-gray-800 font-bold">Note Flow</span>
+              <span className="text-xl text-gray-700 font-bold">Note Flow</span>
             </div>
 
 
@@ -62,7 +63,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               Add Note
             </NavLink>
           </nav>
+          
+           <SidebarUserMenu/>
         </div>
+
+       
 
       </aside>
     </>
