@@ -12,6 +12,7 @@ import UpdateNote from '../components/UpdateNote';
 import CollaboratorModal from '../components/CollaboratorModal';
 import { toast } from 'react-toastify';
 import CollabDropdown from '../components/CollabDropdown';
+import DeleteConformaton from '../components/DeleteConformaton';
 
 const ViewNote = () => {
   const { id } = useParams();
@@ -22,6 +23,7 @@ const ViewNote = () => {
   const [selectedNote, setSelectedNote] = useState(null);
   const [collabOpen, setCollabOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const navigate = useNavigate()
 
   // Fetch note by ID
@@ -67,6 +69,7 @@ const ViewNote = () => {
 
     if (!isOwner) {
       toast.error("Only the owner can delete this note.");
+      setShowConfirmDelete(false)
       return;
     }
 
@@ -146,7 +149,7 @@ const ViewNote = () => {
 
               {/* Delete Button */}
               <button
-                onClick={handleDelete}
+                onClick={() => setShowConfirmDelete(true)}
                 className="flex items-center gap-2 px-2 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition cursor-pointer"
               >
                 <Trash2 size={18} />
@@ -215,6 +218,14 @@ const ViewNote = () => {
           noteId={id}
           onClose={() => setCollabOpen(false)}
           fetchNote={fetchNote}
+        />
+      )}
+
+      {/* delete conformation modal */}
+      {showConfirmDelete && (
+        <DeleteConformaton
+          onConfirm={handleDelete}
+          onCancel={() => setShowConfirmDelete(false)}
         />
       )}
     </>
