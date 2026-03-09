@@ -29,7 +29,7 @@ const CollaboratorModal = ({ noteId, onClose, fetchNote }) => {
         onClose();
         fetchNotes();
       } else {
-        toast.error(data.message || "Failed to add colloborators");
+        toast.error(data.message);
       }
 
     } catch (error) {

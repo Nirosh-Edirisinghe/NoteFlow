@@ -55,7 +55,7 @@ const CollabDropdown = ({ note, onClose, fetchNote }) => {
 
           {/* Owner */}
           <div className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded-md">
-            <span className="text-gray-600">{note.userId.name}</span>
+            <span className="text-gray-600 text-sm">{note.userId.name}</span>
             <span className="text-xs text-gray-600 px-2 py-0.5 border border-gray-400 rounded-full">Owner</span>
           </div>
 
@@ -70,7 +70,7 @@ const CollabDropdown = ({ note, onClose, fetchNote }) => {
               <div key={c._id}
                 className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 rounded-md"
               >
-                <span className="text-gray-600">
+                <span className="text-gray-600 text-sm">
                   {c.user.name}
                   {isCurrentUser && " (You)"}
                 </span>

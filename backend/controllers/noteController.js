@@ -1,5 +1,6 @@
 import NoteModel from "../models/noteModel.js";
 import userModel from "../models/userModel.js";
+import { transporter } from "../utils/email.js";
 
 // Create Note
 const createNote = async (req, res) => {
@@ -148,12 +149,39 @@ const addCollaborator = async (req, res) => {
     }
 
     const note = await NoteModel.findById(id);
+
+    // Check if already a collaborator
+    const alreadyCollaborator = note.collaborators.some(c => c.user.toString() === user._id.toString());
+    if (alreadyCollaborator) {
+      return res.json({ success: false, message: "User already a collaborator" });
+    } 
+
     note.collaborators.push({
       user: user._id,
       role: role
     });
-
     await note.save();
+
+    //Send email notification
+    const mailOptions = {
+      from: `"Note App" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `You have been added as a collaborator`,
+      html: `
+        <p>Hi ${user.name},</p>
+        <p>You have been added as a <strong>${role}</strong> collaborator to the note titled "<strong>${note.title}</strong>".</p>
+        <p>Check your dashboard to view the note.</p>
+      `,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Email sending error:", err);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+
     res.json({ success: true, message: "Collaborator added successful" });
 
   } catch (error) {
@@ -190,7 +218,7 @@ const deleteNote = async (req, res) => {
 // remove colloborator
 const removeCollaborator = async (req, res) => {
   const { noteId, collabId } = req.params;
-  const userId = req.user.id; 
+  const userId = req.user.id;
 
   try {
     const note = await NoteModel.findById(noteId);
@@ -205,10 +233,10 @@ const removeCollaborator = async (req, res) => {
     );
 
     await note.save();
-    res.status(200).json({success:true, message: "Collaborator removed successfully" });
+    res.status(200).json({ success: true, message: "Collaborator removed successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({success:false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
