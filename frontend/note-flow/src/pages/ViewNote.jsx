@@ -118,36 +118,22 @@ const ViewNote = () => {
 
         {/* header section */}
         <div className="flex-none">
-          <div className='flex justify-between mb-6'>
+          <div className='flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4'>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 w-full md:w-auto">
               <button onClick={() => navigate(-1)}
                 className="p-3 bg-gray-200 rounded-full hover:bg-gray-300 cursor-pointer"
               >
                 <ArrowLeft size={20} />
               </button>
 
-              <h1 className="text-xl lg:text-3xl text-slate-700 font-semibold">
-                {note.title}
+              <h1 className="text-xl lg:text-2xl text-slate-700 font-semibold">
+                View note
               </h1>
             </div>
 
-            {/* Created Date */}
-            {/* <div className="flex items-center text-gray-500 gap-2">
-              <Calendar size={18} />
-              <span>{formatDate(note.createdAt)}</span>
-            </div> */}
-
-            {/* update/delete button section */}
-            <div className="flex items-center gap-3">
-
-              {/* Collaborator Button */}
-              <button onClick={() => handleCollaboratorOpen(note)}
-                className="flex items-center gap-2 px-2 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition cursor-pointer"
-              >
-                <Users size={18} />
-                <span className="hidden md:inline font-semibold">Collaborators</span>
-              </button>
+            {/* buton section */}
+            <div className='flex justify-end gap-4'>
 
               {/* Edit Button */}
               <button
@@ -155,7 +141,7 @@ const ViewNote = () => {
                 className="flex items-center gap-2 px-2 py-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition cursor-pointer"
               >
                 <Pencil size={18} />
-                <span className="hidden md:inline font-semibold">Edit Note</span>
+                <span className="hidden font-semibold">Edit Note</span>
               </button>
 
               {/* Delete Button */}
@@ -164,35 +150,52 @@ const ViewNote = () => {
                 className="flex items-center gap-2 px-2 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition cursor-pointer"
               >
                 <Trash2 size={18} />
-                <span className="hidden md:inline font-semibold">Delete Note</span>
+                <span className="hidden font-semibold">Delete Note</span>
               </button>
+
+              {/* Collaborator Button */}
+              <button onClick={() => handleCollaboratorOpen(note)}
+                className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-100 transition cursor-pointer"
+              >
+                <Users size={18} />
+                <span className="text-sm font-medium text-gray-600">Add User</span>
+              </button>
+
+              {/* show colloborators */}
+              <div className='relative flex justify-end'>
+                <button
+                  onClick={() => setOpen(!open)}
+                  className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-100 transition cursor-pointer"
+                >
+                  <Eye size={16} />
+                  <span className="text-sm font-medium text-gray-600">View</span>
+                </button>
+
+                {/* Dropdown */}
+                {open && (
+                  <CollabDropdown note={note} onClose={() => setOpen(false)} />
+                )}
+              </div>
             </div>
 
           </div>
-
-          {/* show colloborators */}
-          <div className='relative flex justify-end mb-4'>
-            <button
-              onClick={() => setOpen(!open)}
-              className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-100 transition cursor-pointer"
-            >
-              <Eye size={16} />
-              <span className="text-sm font-medium text-gray-600">View</span>
-            </button>
-
-            {/* Dropdown */}
-            {open && (
-              <CollabDropdown note={note} onClose={() => setOpen(false)} />
-            )}
-          </div>
-
-          <hr className='text-gray-400 mb-6' />
+          <hr className='text-gray-400 mb-4' />
         </div>
 
         {/* Content Section */}
         <div className="flex-1 overflow-y-auto">
+          
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-slate-700 font-semibold text-xl">
+              {note.title}
+            </h1>
+
+            <span className="text-gray-500 text-sm">
+              {formatDate(note.createdAt)}
+            </span>
+          </div>
           <div
-            className="note-content prose max-w-none bg-white px-6 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+            className="note-content prose max-w-none text-gray-800 bg-white px-6 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
             dangerouslySetInnerHTML={{ __html: note.content }}
           />
         </div>
