@@ -54,6 +54,9 @@ const Dashboard = () => {
     if (filter === "shared") {
       return note.collaborators.some(c => c.user === user._id) && note.userId !== user._id;
     }
+    if (filter === "mynotes") {
+      return note.userId?._id === user._id || note.userId === user._id;
+    }
     return true;
   });
 
@@ -106,13 +109,13 @@ const Dashboard = () => {
             </button>
 
             <button
-              onClick={() => setFilter("pinned")}
-              className={`font-semibold cursor-pointer ${filter === "pinned"
+              onClick={() => setFilter("mynotes")}
+              className={`font-semibold cursor-pointer ${filter === "mynotes"
                 ? "text-blue-600 border-b border-blue-600"
                 : "text-gray-500"
                 }`}
             >
-              Pinned Notes
+              My Notes
             </button>
 
             <button
@@ -124,6 +127,16 @@ const Dashboard = () => {
             >
               Shared Notes
             </button>
+
+            <button
+              onClick={() => setFilter("pinned")}
+              className={`font-semibold cursor-pointer ${filter === "pinned"
+                ? "text-blue-600 border-b border-blue-600"
+                : "text-gray-500"
+                }`}
+            >
+              Pinned Notes
+            </button>
           </div>
 
           <hr className="text-gray-300 mb-4" />
@@ -133,10 +146,11 @@ const Dashboard = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredNotes.map((note) => {
               const collaboratorCount = note.collaborators.length;
-              const isOnlyMe = collaboratorCount === 1 && note.collaborators[0].user === user.id;
+              const isOnlyMe = collaboratorCount === 1 && note.collaborators[0].user === user?._id;
 
               return (
                 <div key={note._id}
+                  onClick={() => navigate(`/view-note/${note._id}`)}
                   className="flex flex-col justify-between p-4 border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 h-full min-h-50"
                 >
                   {/* Top Section */}
@@ -151,44 +165,14 @@ const Dashboard = () => {
                       {/* pin icon */}
                       <Pin size={16}
                         className={`cursor-pointer ${note.pinned ? "text-yellow-500" : "text-gray-400"}`}
-                        onClick={(e) => pinNote(e, note._id)}
+                        onClick={(e) =>{ 
+                          e.stopPropagation();
+                          pinNote(e, note._id)
+                        }}
                       />
 
-                      {/* Menu */}
-                      <div className="relative">
-
-                        <button
-                          onClick={() => setOpenMenuId(openMenuId === note._id ? null : note._id)}
-                          className="p-1 rounded hover:bg-gray-100"
-                        >
-                          <MoreVertical size={18} />
-                        </button>
-
-                        {/* Dropdown */}
-                        <div
-                          className={`absolute right-0 mt-2 w-36 bg-white border border-blue-200 rounded-lg shadow-md transition-all duration-200 ${openMenuId === note._id
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 -translate-y-2 pointer-events-none"
-                            }`}
-                        >
-                          <button onClick={() => navigate(`/view-note/${note._id}`)}
-                            className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-80  hover:rounded-lg text-sm text-blue-600">
-                            <Eye size={16} /> View
-                          </button>
-
-                          <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50 text-sm text-blue-600">
-                            <Pencil size={16} /> Edit
-                          </button>
-
-                          <button className="flex items-center gap-2 px-3 py-2 w-full hover:bg-blue-50  text-blue-600 hover:rounded-lg text-sm">
-                            <Trash2 size={16} /> Delete
-                          </button>
-                        </div>
-
-                      </div>
                     </div>
                   </div>
-
 
                   {/* Preview Content */}
                   <div
