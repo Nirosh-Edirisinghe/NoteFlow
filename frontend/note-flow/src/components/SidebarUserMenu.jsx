@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useRef, useEffect } from 'react'
 import { AppContext } from '../context/AppContext';
 import { User, LogOut } from "lucide-react";
 
@@ -7,11 +7,27 @@ const SidebarUserMenu = () => {
   const { user, logout } = useContext(AppContext);
   const [showMenu, setShowMenu] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const confirmRef = useRef(null);
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
   };
+
+  // close model
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (confirmRef.current && !confirmRef.current.contains(event.target)) {
+        setShowConfirm(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -38,7 +54,7 @@ const SidebarUserMenu = () => {
         </div>
 
         {/* logout Confirmation */}
-        <div
+        <div ref={confirmRef}
           className={`flex flex-col items-center absolute bottom-18 right-2 w-52 bg-gray-300 text-gray-800 p-4 rounded-xl shadow-xl
           transform transition-all duration-300
           ${showConfirm
