@@ -15,7 +15,7 @@ import CollabDropdown from '../components/CollabDropdown';
 
 const ViewNote = () => {
   const { id } = useParams();
-  const { token, backendUrl, user } = useContext(AppContext)
+  const { token, backendUrl, user, fetchNotes } = useContext(AppContext)
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -61,8 +61,31 @@ const ViewNote = () => {
     setEditorOpen(true);
   };
 
-  const handleDelete = () => {
-    console.log("Delete note");
+  // Delete note
+  const handleDelete = async () => {
+    const isOwner = note.userId._id === user._id || note.userId === user._id;
+
+    if (!isOwner) {
+      toast.error("Only the owner can delete this note.");
+      return;
+    }
+
+    try {
+      const { data } = await axios.delete(`${backendUrl}/api/note/delete/${note._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data.success) {
+        toast.success(data.message || "Note deleted successfully");
+        fetchNotes()
+        navigate(-1); // go back after delete
+      } else {
+        toast.error(data.message || "Failed to delete note");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error while deleting note");
+    }
   };
 
   // controlor collab model open
@@ -85,7 +108,7 @@ const ViewNote = () => {
     return <div className="p-6 text-center text-gray-500">Loading...</div>;
   }
 
-  if (!note) {
+  if (!loading && !note) {
     return <div className="p-6 text-center text-red-500">Note not found</div>;
   }
 
