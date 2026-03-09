@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { AppContext } from '../context/AppContext'
-import { MoreVertical, Eye, Pencil, Trash2, Calendar, Users, Pin } from "lucide-react";
+import { MoreVertical, Eye, Pencil, Trash2, Calendar, Users, Pin,Search } from "lucide-react";
 import { useState } from 'react';
 import formatDate from '../Utils/FormatData.js';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,7 @@ const Dashboard = () => {
   const { token, notes, loading, fetchNotes, backendUrl, user } = useContext(AppContext)
   const [openMenuId, setOpenMenuId] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
   const navigate = useNavigate()
 
   const getPreviewHTML = (html, maxLength = 130) => {
@@ -66,7 +67,10 @@ const Dashboard = () => {
       return note.userId?._id === user._id || note.userId === user._id;
     }
     return true;
-  });
+  }).filter(note =>
+    note.title.toLowerCase().includes(search.toLowerCase()) ||
+    note.content.toLowerCase().includes(search.toLowerCase())
+  );
 
   // handle note pinned
   const pinNote = async (e, id) => {
@@ -103,30 +107,44 @@ const Dashboard = () => {
         {/*  Fixed Header */}
         <div className="flex-none">
           <h1 className="text-3xl text-slate-700 mb-4">My Notes</h1>
-          
-          {/* filter section */}
-          <div className="mb-3">
-            {/*large screen view */}
-            <div className="hidden sm:flex gap-6 mb-3">
-              {filterOptions.map((item) => (
-                <button
-                  key={item.value}
-                  onClick={() => setFilter(item.value)}
-                  className={`font-medium cursor-pointer ${filter === item.value
-                    ? "text-blue-600 border-b border-blue-600"
-                    : "text-gray-500"
-                    }`}
-                >
-                  {item.label}
-                </button>
-              ))}
+
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3'>
+            {/* filter section */}
+            <div>
+              {/*large screen view */}
+              <div className="hidden sm:flex gap-6">
+                {filterOptions.map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => setFilter(item.value)}
+                    className={`font-medium cursor-pointer ${filter === item.value
+                      ? "text-blue-600 border-b border-blue-600"
+                      : "text-gray-500"
+                      }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Dropdown for mobile scree */}
+              <div className="sm:hidden">
+                <FilterDropdown filter={filter} setFilter={setFilter} />
+              </div>
+
             </div>
 
-            {/* Dropdown for mobile scree */}
-            <div className="sm:hidden mb-3">
-              <FilterDropdown filter={filter} setFilter={setFilter} />
+            {/* search note */}
+            <div className="relative w-full sm:w-1/2 md:w-64">
+              <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search note..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-white border border-gray-300 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              />
             </div>
-
           </div>
 
           <hr className="text-gray-300 mb-4" />
