@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Sidebar from '../components/Sidebar';
-import { Outlet } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Outlet, Link } from "react-router-dom";
+import { Menu, NotebookPen } from "lucide-react";
 
 const AppLayout = () => {
 
@@ -21,12 +21,17 @@ const AppLayout = () => {
         <div className="flex-1 flex flex-col">
 
           {/* Top bar for mobile screen */}
-          <div className="lg:hidden flex justify-between bg-white pr-4 py-1 shadow">
-            <h1 className="font-semibold text-slate-800">
-              Note Flow
-            </h1>
+          <div className="lg:hidden flex justify-between bg-white px-4 py-2 shadow">
 
-            <button onClick={() => setSidebarOpen(true)} className="text-slate-700">
+            <Link to='/' className='flex items-center gap-2'>
+              <div className="w-6 h-6 flex items-center justify-center bg-blue-600 border border-blue-500 rounded-md">
+                <NotebookPen className="text-white" size={16} />
+              </div>
+              <span className="font-semibold text-slate-800">Note Flow</span>
+            </Link>
+
+
+            <button onClick={() => setSidebarOpen(true)} className="text-slate-700 cursor-pointer">
               <Menu size={24} />
             </button>
           </div>

@@ -183,7 +183,6 @@ const NoteEditor = () => {
           >
             <Undo size={16} />
           </button>
-
         </div>
       </div>
 

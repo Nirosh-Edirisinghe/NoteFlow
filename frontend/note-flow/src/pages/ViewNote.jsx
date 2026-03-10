@@ -96,7 +96,7 @@ const ViewNote = () => {
     const isOwner = note.userId._id === user._id || note.userId === user._id;
 
     if (!isOwner) {
-      toast.error("Only the owner can manage collaborators.");
+      toast.error("Only the owner can share this.");
       return;
     }
 
@@ -161,7 +161,7 @@ const ViewNote = () => {
                 className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-100 transition cursor-pointer"
               >
                 <Users size={18} />
-                <span className="text-sm font-medium text-gray-600">Add User</span>
+                <span className="text-sm font-medium text-gray-600">Share</span>
               </button>
 
               {/* show colloborators */}

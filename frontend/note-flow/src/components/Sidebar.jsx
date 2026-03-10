@@ -28,7 +28,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           <div className="px-6 py-5 flex items-center justify-between border-b border-slate-300">
 
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 flex items-center justify-center bg-blue-600 border border-blue-500 rounded-lg">
+              <div className="w-8 h-8 flex items-center justify-center bg-blue-600 border border-blue-500 rounded-lg">
                 <NotebookPen className="text-white" size={20} />
               </div>
               <span className="text-xl text-gray-700 font-bold">Note Flow</span>
@@ -36,7 +36,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
 
             {/* sidebar close Icon in mobile view */}
-            <button onClick={() => setSidebarOpen(false)} className="md:hidden">
+            <button onClick={() => setSidebarOpen(false)} className="md:hidden cursor-pointer">
               <X size={20} />
             </button>
           </div>
@@ -63,7 +63,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               Add Note
             </NavLink>
           </nav>
-          
+
            <SidebarUserMenu/>
         </div>
 

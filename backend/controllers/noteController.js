@@ -164,7 +164,7 @@ const addCollaborator = async (req, res) => {
 
     //Send email notification
     const mailOptions = {
-      from: `"Note App" <${process.env.EMAIL_USER}>`,
+      from: `"Note Flow" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `You have been added as a collaborator`,
       html: `
